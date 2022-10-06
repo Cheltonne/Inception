@@ -1,21 +1,23 @@
 version: '3'
-services:
-    mysql:
-        image: mariadb
-        volumes:
-            - /home/chajax/data:/var/lib/mysql
-        environment:
-            MYSQL_ROOT_PASSWORD: mysql_root_pass
-            MYSQL_DATABASE: DB_NAME
-            MYSQL_USER: USER_NAME
-            MYSQL_PASSWORD: USER_PASS
-            restart: always
 
+services:
     webserver:
         image: nginx
         volumes:
-            - ./nginx/conf/:/etc/nginx/conf.d/:ro
+            - ./requirements/nginx/conf/:/etc/nginx/conf.d/:ro
             - ./certbot/www:/var/www/certbot/:ro
         ports:
+            - 80:80 
             - 443:443
         restart: always
+
+#    mysql:
+#        image: mariadb
+#        volumes:
+#            - /home/chajax/data:/var/lib/mysql
+#        environment:
+#            MYSQL_ROOT_PASSWORD: mysql_root_pass
+#            MYSQL_DATABASE: DB_NAME
+#            MYSQL_USER: USER_NAME
+#            MYSQL_PASSWORD: USER_PASS
+#            restart: always
