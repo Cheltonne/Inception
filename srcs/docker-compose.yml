@@ -12,6 +12,8 @@ services:
         ports:
             - 80:80 
             - 443:443
+        depends_on:
+            - wordpress
         volumes:
             - ./requirements/nginx/conf/:/etc/nginx/conf.d/:ro
         restart: always
@@ -21,21 +23,20 @@ services:
         #|               MARIADB                |#
         #|______________________________________|#
 
-    mariadb:
-        build: ./requirements/mariadb/
-        ports:
-            - 3306:3306
-        volumes:
-             - ./requirements/mariadb/data:/var/lib/mysql
-        environment:
-             MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
-             MYSQL_ROOT_PASSWORD:   ${MARIADB_ROOT_PASSWORD}
-             MYSQL_DATABASE:        ${DB_NAME}
-             MYSQL_USER:            ${USER_NAME}
-             DB_NAME:               $WP_DATABASE_NAME
-
-             MYSQL_PASSWORD:        ${USER_PASSWORD}
-        restart: always
+#    mariadb:
+#        build: ./requirements/mariadb/
+#        ports:
+#            - 3306:3306
+#        volumes:
+#             - ./requirements/mariadb/data:/var/lib/mysql
+#        environment:
+#             MYSQL_ROOT_PASSWORD:   ${MARIADB_ROOT_PASSWORD}
+#             MYSQL_DATABASE:        ${DB_NAME}
+#             MYSQL_USER:            ${USER_NAME}
+#             DB_NAME:               ${WP_DATABASE_NAME}
+#
+#             MYSQL_PASSWORD:        ${USER_PASSWORD}
+#        restart: always
 
         #________________________________________#
         #|                                      |#
@@ -48,8 +49,9 @@ services:
             - "9000:9000"
         volumes:
             - ./requirements/wordpress/html:/var/www/html
-        depends_on:
-            - mariadb
+            # depends_on:
+            #  mariadb:
+            #   condition:  service_healthy
         environment:
             MYSQL_HOST:         ${MYSQL_HOST}
             WP_DATABASE_NAME:   ${WP_DATABASE_NAME}
