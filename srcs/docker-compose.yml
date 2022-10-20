@@ -10,33 +10,13 @@ services:
     nginx:
         build: ./requirements/nginx/
         ports:
-            - 80:80 
             - 443:443
-        depends_on:
-            - wordpress
         volumes:
             - ./requirements/nginx/conf/:/etc/nginx/conf.d/:ro
+            - ./requirements/wordpress/html:/var/www/html
+        depends_on:
+            - wordpress
         restart: always
-
-        #________________________________________#
-        #|                                      |#
-        #|               MARIADB                |#
-        #|______________________________________|#
-
-#    mariadb:
-#        build: ./requirements/mariadb/
-#        ports:
-#            - 3306:3306
-#        volumes:
-#             - ./requirements/mariadb/data:/var/lib/mysql
-#        environment:
-#             MYSQL_ROOT_PASSWORD:   ${MARIADB_ROOT_PASSWORD}
-#             MYSQL_DATABASE:        ${DB_NAME}
-#             MYSQL_USER:            ${USER_NAME}
-#             DB_NAME:               ${WP_DATABASE_NAME}
-#
-#             MYSQL_PASSWORD:        ${USER_PASSWORD}
-#        restart: always
 
         #________________________________________#
         #|                                      |#
@@ -49,20 +29,33 @@ services:
             - "9000:9000"
         volumes:
             - ./requirements/wordpress/html:/var/www/html
-            # depends_on:
-            #  mariadb:
-            #   condition:  service_healthy
+        env_file:
+            - .env
         environment:
-            MYSQL_HOST:         ${MYSQL_HOST}
-            WP_DATABASE_NAME:   ${WP_DATABASE_NAME}
-            WP_DATABASE_USER:  ${WP_DATABASE_USER}
-            WP_DATABASE_PASSWORD:  ${WP_DATABASE_PASSWORD}
-            DOMAIN_NAME:      ${DOMAIN_NAME}
-            WP_TITLE:         ${WP_TITLE}
-            WP_ADMIN_USER:     ${WP_ADMIN_USER}
-            WP_ADMIN_PASSWORD:     ${WP_ADMIN_PASSWORD}
-            WP_ADMIN_EMAIL:   ${WP_ADMIN_EMAIL}
-            WP_USER:           ${WP_USER}
-            WP_PASSWORD:           ${WP_PASSWORD}
-            WP_EMAIL:         ${WP_EMAIL}
+            - WORDPRESS_DB_HOST=db:3306
+            - WORDPRESS_DB_USER=$MYSQL_USER
+            - WORDPRESS_DB_PASSWORD=$MYSQL_PASSWORD
+            - WORDPRESS_DB_NAME=wordpress
+        # depends_on:
+        #  mariadb:
+        #   condition:  service_healthy
+        restart: always
 
+        #________________________________________#
+        #|                                      |#
+        #|               MARIADB                |#
+        #|______________________________________|#
+
+#        mariadb:
+#        build: ./requirements/mariadb/
+#        ports:
+#            - 3306:3306
+#        volumes:
+#            - ./requirements/mariadb/data:/var/lib/mysql
+#        environment:
+#            MYSQL_ROOT_PASSWORD:   ${MARIADB_ROOT_PASSWORD}
+#            MYSQL_DATABASE:        ${DB_NAME}
+#            MYSQL_USER:            ${USER_NAME}
+#            DB_NAME:               ${WP_DATABASE_NAME}
+#            MYSQL_PASSWORD:        ${USER_PASSWORD}
+#        restart: always
