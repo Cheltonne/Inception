@@ -1,14 +1,8 @@
 FROM        debian:buster
 
-RUN         apt-get update && apt-get install -y mariadb-server
-
-EXPOSE      3306
-
-#HEALTHCHECK --start-period=5m \
- #  CMD mariadb -e 'SELECT @@datadir;' || exit 1
+RUN         apt update && apt install -y mariadb-client mariadb-server
 
 COPY        ./entrypoint/entrypoint.sh /usr/local/bin/
+COPY        ./entrypoint/init.sql /var/
 
-ENTRYPOINT  ["entrypoint.sh"]
-
-CMD         ["mysqld"]
+CMD  ["entrypoint.sh"]

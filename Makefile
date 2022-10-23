@@ -1,18 +1,18 @@
 COMPOSE	= cd srcs && docker compose
 
 all:
-			 mkdir	srcs/requirements/mariadb/conf \
-					srcs/requirements/mariadb/data \
-					srcs/requirements/wordpress/html
+			sudo mkdir -p /home/chajax/data/mysql 
+			sudo mkdir -p /home/chajax/data/html
 up :
 	$(COMPOSE) up -d
 down :
 	$(COMPOSE) down
 up-v :
-	$(COMPOSE) up
+	$(COMPOSE) --verbose up
 up-b :
 	$(COMPOSE) up --build
-
+config :
+	$(COMPOSE) config
 re : fclean all up
 
 clean :
@@ -20,9 +20,8 @@ clean :
 
 fclean :	clean
 			docker system prune --volumes --all --force
-			sudo rm -rf srcs/requirements/mariadb/conf \
-						srcs/requirements/mariadb/data \
-						srcs/requirements/wordpress/html
+			sudo rm -rf	/home/chajax/data/mysql \
+						/home/chajax/data/html
 			docker network prune --force
 			echo docker volume rm $(docker volume ls -q)
 			docker image prune --force

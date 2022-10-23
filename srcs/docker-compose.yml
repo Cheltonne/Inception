@@ -12,12 +12,12 @@ services:
         ports:
             - 443:443
         volumes:
+            - /home/chajax/data/html:/var/www/html
             - ./requirements/nginx/conf/:/etc/nginx/conf.d/:ro
-            - ./requirements/wordpress/html:/var/www/html
         depends_on:
             - wordpress
         networks:
-            - inception-network
+            - front
         restart: always
 
         #________________________________________#
@@ -26,20 +26,16 @@ services:
         #|______________________________________|#
 
     wordpress:
-        image: wordpress:php7.3-fpm-alpine
-        ports:
-            - 9000:9000
+        image: wordpress:php7.3-fpm
         volumes:
-            - ./requirements/wordpress/html:/var/www/html
-              #env_file:
-              #- .env
-        environment:
-            - WORDPRESS_DB_HOST=db:3306
-            - WORDPRESS_DB_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            - /home/chajax/data/html:/var/www/html
+        env_file:
+            - .env
         depends_on:
             - mariadb
         networks:
-            - inception-network
+            - front
+            - back
         restart: always
 
         #________________________________________#
@@ -48,16 +44,16 @@ services:
         #|______________________________________|#
 
     mariadb:
-        build: ./requirements/mariadb
-        ports:
-            - 3306:3306
+        #build: ./requirements/mariadb
+        image: mariadb:latest
         volumes:
-            - ./requirements/mariadb/data:/var/lib/mysql
-        environment:
-            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            - /home/chajax/data/mysql:/var/lib/mysql
+        env_file:
+            - .env
         networks:
-            - inception-network
-        restart: always
+            - back
 networks:
-  inception-network:
+  front:
+    driver: bridge
+  back:
     driver: bridge
