@@ -12,8 +12,7 @@ services:
         ports:
             - 443:443
         volumes:
-            - /home/chajax/data/html:/var/www/html
-            - ./requirements/nginx/conf/:/etc/nginx/conf.d/:ro
+            - wp_data:/var/www/html
         depends_on:
             - wordpress
         networks:
@@ -26,9 +25,10 @@ services:
         #|______________________________________|#
 
     wordpress:
-        image: wordpress:php7.3-fpm
+        #build: ./requirements/wordpress
+        image: wordpress:php7.3-fpm-alpine
         volumes:
-            - /home/chajax/data/html:/var/www/html
+            - wp_data:/var/www/html
         env_file:
             - .env
         depends_on:
@@ -36,7 +36,7 @@ services:
         networks:
             - front
             - back
-        restart: always
+              #restart: always
 
         #________________________________________#
         #|                                      |#
@@ -44,16 +44,34 @@ services:
         #|______________________________________|#
 
     mariadb:
-        #build: ./requirements/mariadb
-        image: mariadb:latest
+        build: ./requirements/mariadb
         volumes:
-            - /home/chajax/data/mysql:/var/lib/mysql
+            - db:/var/lib/mysql
         env_file:
             - .env
         networks:
             - back
+        restart: always
+        
+        #-----------------------------------------#
+        #           networks & volumes            #
+        #-----------------------------------------#
+
 networks:
-  front:
-    driver: bridge
-  back:
-    driver: bridge
+    front:
+        driver: bridge
+    back:
+        driver: bridge
+volumes:
+    wp_data:
+        driver: local
+        driver_opts:
+            type: none
+            device: /home/chajax/data/html
+            o: bind
+    db:
+        driver: local
+        driver_opts:
+            type: none
+            device: /home/chajax/data/mysql
+            o: bind

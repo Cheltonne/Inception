@@ -1,8 +1,21 @@
 FROM        debian:buster
 
-RUN         apt update && apt install -y mariadb-client mariadb-server
+RUN apt-get update
+RUN apt-get install -y mariadb-server \
+    mariadb-client \
+    gettext-base \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY        ./entrypoint/entrypoint.sh /usr/local/bin/
-COPY        ./entrypoint/init.sql /var/
+#Allow to run the daemon of mysql
+# Purge and re-create /var/lib/mysql with appropriate ownership
+# ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
+RUN mkdir -p /var/run/mysqld \
+&& chown -R mysql:mysql /var/run/mysqld \
+&& chmod 777 /var/run/mysqld
 
-CMD  ["entrypoint.sh"]
+COPY    ./tools/entrypoint.sh /usr/local/bin/
+COPY    ./tools/secure_install.sql /var/
+
+EXPOSE  3306
+
+CMD     ["entrypoint.sh" ]
