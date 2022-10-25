@@ -1,36 +1,20 @@
-FROM    debian:buster
+FROM debian:buster
 
-RUN     apt-get update && apt-get install -y curl \
-        wget \
-	    curl \
-    	bash \
-    	php \
-	    php-cgi \
-    	php-mysql \
-    	php-fpm \
-    	php-pdo \
-    	php-gd php-cli \
-    	php-mbstring \
-        && rm -rf /var/lib/apt/lists/*
+RUN apt update -y && apt install curl mariadb-client php php7.3 php7.3-fpm php7.3-mysql php-common php7.3-cli php7.3-common php7.3-json php7.3-opcache php7.3-readline php-curl php-gd php-intl php-mbstring php-soap php-xml php-xmlrpc php-zip gettext-base -y
+RUN mkdir -p /var/www/html && cd /var/www/html
 
-RUN     curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
-        && chmod +x wp-cli.phar \
-        && mv wp-cli.phar /usr/local/bin/wp
+COPY ./tools/php-fpm.conf /etc/php/7.3/fpm/pool.d/www.conf
+COPY ./tools/create_wordpress.sh /var/.
 
-COPY    ./tools/php-fpm.conf /etc/php/7.4/fpm/pool.d/
+RUN mkdir -p /var/run && mkdir /run/php
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+RUN chmod +x wp-cli.phar
+RUN mv wp-cli.phar /usr/local/bin/wp
 
-RUN     mkdir /run/php
+WORKDIR /var/www/html
+RUN wp core download --allow-root
+RUN chown -R www-data:www-data /var/www/html
 
-#we copy the script, give the right to launch it in local on our computer
-COPY    ./tools/create_wordpress.sh /usr/local/bin/
-RUN     chmod +x /usr/local/bin/create_wordpress.sh
-ENTRYPOINT ["/usr/local/bin/create_wordpress.sh"]
+EXPOSE 9000
 
-#We go the html directory
-WORKDIR /var/www/html/
-
-#We expose the 9000 port
-EXPOSE  9000
-
-#Launch PHP FPM in foreground and ignore deamonize from conf file (-F)
-CMD     ["/usr/sbin/php-fpm7.3", "-F"]
+CMD ["sh", "/var/create_wordpress.sh"]
