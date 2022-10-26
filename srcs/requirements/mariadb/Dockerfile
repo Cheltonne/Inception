@@ -1,7 +1,7 @@
 FROM    debian:buster
 
-RUN     apt-get update
-RUN     apt-get install -y mariadb-server \
+RUN     apt-get update && apt-get install -y \
+        mariadb-server \
         mariadb-client \
         gettext-base \
         && rm -rf /var/lib/apt/lists/*
@@ -13,9 +13,9 @@ RUN     mkdir -p /var/run/mysqld \
         && chown -R mysql:mysql /var/run/mysqld \
         && chmod 777 /var/run/mysqld
 
-COPY    ./tools/server.cnf /etc/mysql/mariadb.conf.d/server.cnf
 COPY    ./tools/entrypoint.sh /usr/local/bin/
 COPY    ./tools/init.sql /var/
+COPY    ./tools/wordpress_db.sql /var/
 
 EXPOSE  3306
 

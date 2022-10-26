@@ -1,30 +1,40 @@
 #!/bin/sh
 
-cat <<-EOF > /etc/mysql/my.cnf
-    [mysqld]
-    user = root
-    port = 3306
-    datadir = /var/lib/mysql
-    bind-address = 0.0.0.0
-    skip-bind-address
-    skip-networking = false
-    pid-file = /run/mysqld/mysqld.pid
-    socket = /run/mysqld/mysqld.sock
-EOF
-
-FILE=/var/lib/mysql/.db_createII
-if  [ ! -f "$FILE" ]
+if  [ ! -d "/var/lib/mysql/$DB_NAME" ]
 then
-	echo "Creating Database...\n"
-	envsubst < /var/init.sql > /var/init_env.sql
-	service mysql start
-	mysql -D mysql < /var/init_env.sql | true
-	touch /var/lib/mysql/.db_create
-	service mysql stop | echo -n ""
-    echo "Database created.\n"
+    service mysql start
+    #INVERT THESE TWO
+    /usr/bin/mysql_install_db
+	echo "Creating \"wordpress\" database with secure_install...\n"
+    apt-get update
+    apt-get install -y expect
+    SECURE_MYSQL=$(expect -c "
+    set timeout 10
+    spawn mysql_secure_installation
+    expect \"Enter current password for root (enter for none):\"
+    send \"$ADMIN_PASSWORD\r\"
+    expect \"Change the root password?\"
+    send \"n\r\"
+    expect \"Remove anonymous users?\"
+    send \"y\r\"
+    expect \"Disallow root login remotely?\"
+    send \"y\r\"
+    expect \"Remove test database and access to it?\"
+    send \"y\r\"
+    expect \"Reload privilege tables now?\"
+    send \"y\r\"
+    expect eof
+    ")
+    echo "$SECURE_MYSQL"
+    apt purge -y expect
+    echo "GRANT ALL ON *.* TO 'root'@'%' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD'; FLUSH PRIVILEGES;" | mysql -uroot
+    echo "CREATE DATABASE IF NOT EXISTS $DB_NAME; GRANT ALL ON $DB_NAME.* TO 'chajax'@'%' IDENTIFIED BY '$ADMIN_PASSWORD'; FLUSH PRIVILEGES;" | mysql -u root
+    echo "\"wordpress\" database created.\n"
+    echo "Now importing wordpress_db dump to bypass installation process..."
+    mysql -uroot -p$ADMIN_PASSWORD $DB_NAME < /var/wordpress_db.sql
+    echo "Database dump import done!"
+    service mysql stop
 else
-    echo "Database already created! Silly you... :$"
+    echo "Database already created! Silly you... :$\n"
 fi
-
-exec mysqld_safe -u root -p=${ADMIN_PASSWORD}
-echo "Database created.\n"
+exec mysqld_safe --bind-address=0.0.0.0 
