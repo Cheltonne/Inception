@@ -1,9 +1,21 @@
 #!/bin/sh
 
+
+cat <<-EOF > /etc/mysql/my.cnf
+    [mysqld]
+    user = root
+    port = 3306
+    datadir = /var/lib/mysql
+    bind-address = 0.0.0.0
+    skip-bind-address
+    skip-networking = false
+    pid-file = /run/mysqld/mysqld.pid
+    socket = /run/mysqld/mysqld.sock
+EOF
+
 if  [ ! -d "/var/lib/mysql/$DB_NAME" ]
 then
     service mysql start
-    #INVERT THESE TWO
     /usr/bin/mysql_install_db
 	echo "Creating \"wordpress\" database with secure_install...\n"
     apt-get update
@@ -26,15 +38,15 @@ then
     expect eof
     ")
     echo "$SECURE_MYSQL"
-    apt purge -y expect
-    echo "GRANT ALL ON *.* TO 'root'@'%' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD'; FLUSH PRIVILEGES;" | mysql -uroot
+    apt-get purge -y expect
+    echo "GRANT ALL ON *.* TO 'root'@'%' IDENTIFIED BY '$ADMIN_PASSWORD'; FLUSH PRIVILEGES;" | mysql -uroot
     echo "CREATE DATABASE IF NOT EXISTS $DB_NAME; GRANT ALL ON $DB_NAME.* TO 'chajax'@'%' IDENTIFIED BY '$ADMIN_PASSWORD'; FLUSH PRIVILEGES;" | mysql -u root
-    echo "\"wordpress\" database created.\n"
+    echo "\"$DB_NAME\" database created.\n"
     echo "Now importing wordpress_db dump to bypass installation process..."
     mysql -uroot -p$ADMIN_PASSWORD $DB_NAME < /var/wordpress_db.sql
     echo "Database dump import done!"
-    service mysql stop
 else
     echo "Database already created! Silly you... :$\n"
 fi
+service mysql stop
 exec mysqld_safe --bind-address=0.0.0.0 

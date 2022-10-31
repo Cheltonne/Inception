@@ -11,7 +11,7 @@ RUN     apt-get update && apt-get install -y \
 # ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
 RUN     mkdir -p /var/run/mysqld \
         && chown -R mysql:mysql /var/run/mysqld \
-        && chmod 777 /var/run/mysqld
+        && chmod 777 /var/run/mysqld 
 
 COPY    ./tools/entrypoint.sh /usr/local/bin/
 COPY    ./tools/init.sql /var/
