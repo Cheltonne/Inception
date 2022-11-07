@@ -14,7 +14,6 @@ RUN     mkdir -p /var/run/mysqld \
         && chmod 777 /var/run/mysqld 
 
 COPY    ./tools/entrypoint.sh /usr/local/bin/
-COPY    ./tools/init.sql /var/
 COPY    ./tools/wordpress_db.sql /var/
 
 EXPOSE  3306
