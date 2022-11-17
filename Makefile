@@ -29,4 +29,4 @@ fclean :	clean
 			echo docker volume rm $(docker volume ls -q)
 			docker image prune --force
 
-.PHONY : all build up down clean fclean re
+.PHONY : all build up up-b up-v up-d config down clean fclean re
