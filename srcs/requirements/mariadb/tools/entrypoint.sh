@@ -1,5 +1,6 @@
 #!/bin/sh
 
+
 if  [ ! -d "/var/lib/mysql/$DB_NAME" ]
 then
     service mysql start
@@ -17,7 +18,7 @@ then
     expect \"Remove anonymous users?\"
     send \"y\r\"
     expect \"Disallow root login remotely?\"
-    send \"y\r\"
+    send \"n\r\"
     expect \"Remove test database and access to it?\"
     send \"y\r\"
     expect \"Reload privilege tables now?\"
@@ -26,11 +27,11 @@ then
         ")
     echo "$SECURE_MYSQL"
     apt-get purge -y expect
-    echo "CREATE DATABASE IF NOT EXISTS $DB_NAME; GRANT ALL ON $DB_NAME.* TO 'chajax'@'%' IDENTIFIED BY '$ADMIN_PASSWORD'; FLUSH PRIVILEGES;" | mysql -u root
+    echo "CREATE DATABASE IF NOT EXISTS $DB_NAME; GRANT ALL ON $DB_NAME.* TO '$ADMIN_USER'@'%' IDENTIFIED BY '$ADMIN_PASSWORD'; FLUSH PRIVILEGES;" | mysql -u root
     echo "\"$DB_NAME\" database created.\n"
-    echo "Now importing wordpress_db dump to bypass installation process..."
-    mysql -uroot -p$ADMIN_PASSWORD $DB_NAME < /var/wordpress_db.sql
-    echo "Database dump import done!"
+   # echo "Now importing wordpress_db dump to bypass installation process..."
+   # mysql -uroot -p$ADMIN_PASSWORD $DB_NAME < /var/wordpress_db.sql
+   # echo "Database dump import done!"
 else
     echo "Database already created! Silly you... :$\n"
 fi
