@@ -4,7 +4,7 @@
 if  [ ! -d "/var/lib/mysql/$DB_NAME" ]
 then
     service mysql start
-    /usr/bin/mysql_install_db
+	/usr/bin/mysql_install_db
 	echo "Creating \"wordpress\" database with mysql_install_db...\n"
     apt-get update
     apt-get install -y expect
@@ -26,12 +26,10 @@ then
     expect eof
         ")
     echo "$SECURE_MYSQL"
+	echo "CREATE DATABASE IF NOT EXISTS $DB_NAME; GRANT ALL ON $DB_NAME.* TO '$ADMIN_USER'@'%' IDENTIFIED BY '$ADMIN_PASSWORD'; FLUSH PRIVILEGES;" | mysql -u root
+	mysql -h localhost -u root < ask_pw.sql
     apt-get purge -y expect
-    echo "CREATE DATABASE IF NOT EXISTS $DB_NAME; GRANT ALL ON $DB_NAME.* TO '$ADMIN_USER'@'%' IDENTIFIED BY '$ADMIN_PASSWORD'; FLUSH PRIVILEGES;" | mysql -u root
     echo "\"$DB_NAME\" database created.\n"
-   # echo "Now importing wordpress_db dump to bypass installation process..."
-   # mysql -uroot -p$ADMIN_PASSWORD $DB_NAME < /var/wordpress_db.sql
-   # echo "Database dump import done!"
 else
     echo "Database already created! Silly you... :$\n"
 fi

@@ -3,9 +3,11 @@ COMPOSE	= cd srcs && docker compose
 all:
 			sudo mkdir -p /home/chajax/data/mysql 
 			sudo mkdir -p /home/chajax/data/html
-			$(MAKE) build
+			$(MAKE) build-no-cache
 			$(MAKE) up
 build:
+	$(COMPOSE) build 
+build-no-cache:
 	$(COMPOSE) build --no-cache
 up :
 	$(COMPOSE) up
