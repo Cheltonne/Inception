@@ -1,5 +1,5 @@
 # Inception
-Introduction
+<h1>Introduction</h1>
 
 This Docker compose infrastructure is designed to provide a simple and easy-to-use environment for running a Wordpress website, with MariaDB as the database and Redis for caching. Additionally, an FTP server is provided to allow easy file uploads.
 Prerequisites
@@ -15,11 +15,11 @@ git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
 
     Change into the project directory
 
-cd YOUR_REPOSITORY
+cd srcs
 
     Build and start the containers
 
-docker-compose up -d --build
+make
 
     Once the containers are running, you can access your Wordpress website by visiting http://localhost:8080 in your browser.
 
@@ -31,7 +31,7 @@ docker-compose up -d --build
 
     If you want to stop the containers, you can use the following command
 
-docker-compose down
+make down
 
 Note
 
@@ -39,7 +39,7 @@ Note
     You can also customize the configuration of the services by modifying the respective configuration files located in the config directory
     If you make any changes to the Dockerfile, run the following command to rebuild the services:
 
-docker-compose up -d --build
+make 
 
 Conclusion
 
