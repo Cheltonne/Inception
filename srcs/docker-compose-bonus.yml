@@ -1,0 +1,116 @@
+version: '3'
+
+services:
+
+        #________________________________________#
+        #|                                      |#
+        #|                NGINX                 |#
+        #|______________________________________|#
+
+    nginx:
+        build: ./bonus/nginx/
+        container_name: nginx
+        ports:
+            - 443:443
+        volumes:
+            - wp_data:/var/www/html
+        depends_on:
+            - wordpress
+        networks:
+            - front
+        restart: always
+
+        #________________________________________#
+        #|                                      |#
+        #|              WORDPRESS               |#
+        #|______________________________________|#
+
+    wordpress:
+        build: ./bonus/wordpress
+        container_name: wordpress
+        volumes:
+            - wp_data:/var/www/html
+        env_file:
+            - .env
+        depends_on:
+            - mariadb
+            - redis
+        networks:
+            - front
+            - back
+        restart: always
+
+        #________________________________________#
+        #|                                      |#
+        #|               MARIADB                |#
+        #|______________________________________|#
+
+    mariadb:
+        build: ./bonus/mariadb
+        container_name: mariadb
+        volumes:
+            - db:/var/lib/mysql
+        env_file:
+            - .env
+        networks:
+            - back
+        restart: always
+
+        #________________________________________#
+        #|                                      |#
+        #|               REDIS                  |#
+        #|______________________________________|#
+    redis:
+        build: ./bonus/redis
+        container_name: redis
+        networks:
+            - back
+        volumes:
+          - redis-data:/var/lib/redis
+        restart: always
+        
+        #________________________________________#
+        #|                                      |#
+        #|               VSFTPD                 |#
+        #|______________________________________|#
+    vsftpd:
+        build: ./bonus/vsftpd
+        container_name: vsftpd
+        volumes:
+            - wp_data:/var/www/html
+        ports:
+          - "21:21"
+          - "20:20"
+          - "21100-21110:21100-21110"
+        env_file:
+            - .env
+        restart: always
+
+        #-----------------------------------------#
+        #           networks & volumes            #
+        #-----------------------------------------#
+
+networks:
+    front:
+        driver: bridge
+    back:
+        driver: bridge
+volumes:
+    wp_data:
+        driver: local
+        driver_opts:
+            type: none
+            device: /home/chajax/data/html
+            o: bind
+    db:
+        driver: local
+        driver_opts:
+            type: none
+            device: /home/chajax/data/mysql
+            o: bind
+    redis-data:
+        driver: local
+        driver_opts:
+            type: none
+            device: /home/chajax/data/cache
+            o: bind
