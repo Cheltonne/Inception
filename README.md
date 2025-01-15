@@ -1,44 +1,42 @@
 # Inception
-<h1>Introduction</h1>
 
-This Docker compose infrastructure is designed to provide a simple and easy-to-use environment for running a Wordpress website, with MariaDB as the database and Redis for caching. Additionally, an FTP server is provided to allow easy file uploads.
-Prerequisites
+## About
 
-    Docker
-    Docker Compose
+The **Inception** project focuses on system administration through Docker. You'll build a multi-container setup with services like **NGINX**, **WordPress**, **MariaDB**, and **Redis** on a personal virtual machine. The infrastructure will be secured with **TLS** and optimized for performance.
 
-Getting Started
+## Services
 
-    Clone this repository.
+1. **NGINX** (with TLS)
+2. **WordPress** + **php-fpm**
+3. **MariaDB**
+4. **Redis Cache**
 
-git clone https://github.com/Cheltonne/Inception.git
+## Setup
 
-    Change into the project directory
+- **Virtual Machine** environment required.
+- **Makefile** is used to build Docker images and start services.
+- **docker-compose.yml** manages the containers and networking.
+- All containers should restart on crash.
 
-cd srcs
+## Steps
 
-    Build and start the containers
+1. Clone the repository.
+2. Run `make` to build the Docker images.
+3. Start the containers with `docker-compose up --build`.
 
-make
+Access the application at `https://<your-login>.42.fr`.
 
-    Once the containers are running, you can access your Wordpress website by visiting http://localhost:8080 in your browser.
+## Security Best Practices
 
-    You can also access phpMyAdmin on http://localhost:8081 to manage your MariaDB database
+- Use **TLS** (TLSv1.2 or TLSv1.3) for secure connections.
+- Store sensitive data in environment variables or Docker secrets.
+- No credentials in Dockerfiles.
 
-    Connect to the FTP server using your favorite FTP client software by using the host localhost, port 21 and the credentials provided in the .env file
+## Conclusion
 
-    The redis server is also running on default port 6379 and can be accessed with the credentials provided in the .env file
+This project demonstrates creating a secure, multi-service infrastructure using Docker. It enhances your understanding of containerization, networking, and security best practices.
 
-    If you want to stop the containers, you can use the following command
 
-make down
-
-Note
-
-    You can change the credentials and other settings by modifying the .env file
-    You can also customize the configuration of the services by modifying the respective configuration files located in the config directory
-    If you make any changes to the Dockerfile, run the following command to rebuild the services:
-
-make 
+ 
 
 ![inception grade 105/100](https://github.com/Cheltonne/Cheltonne/blob/main/inception%20grade.png?raw=true)
