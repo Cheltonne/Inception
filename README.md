@@ -18,14 +18,14 @@ The **Inception** project focuses on system administration through Docker. It is
 - **docker-compose.yml** manages the containers and networking.
 - All containers should restart on crash.
 
-## Steps
+<!-- ## Steps
 
 1. Clone the repository.
 2. Run `make` to build the Docker images.
 3. Start the containers with `docker-compose up --build`.
 
 Access the application at `https://<your-login>.42.fr`.
-
+-->
 ## Security Best Practices
 
 - Uses **TLS** (TLSv1.2 or TLSv1.3) for secure connections.
