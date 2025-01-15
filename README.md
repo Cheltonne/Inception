@@ -28,8 +28,8 @@ Access the application at `https://<your-login>.42.fr`.
 
 ## Security Best Practices
 
-- Use **TLS** (TLSv1.2 or TLSv1.3) for secure connections.
-- Store sensitive data in environment variables or Docker secrets.
+- Uses **TLS** (TLSv1.2 or TLSv1.3) for secure connections.
+- Sensitive data is stored in environment variables.
 - No credentials in Dockerfiles.
 
 ## Conclusion
