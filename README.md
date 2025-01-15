@@ -2,7 +2,7 @@
 
 ## About
 
-The **Inception** project focuses on system administration through Docker. You'll build a multi-container setup with services like **NGINX**, **WordPress**, **MariaDB**, and **Redis** on a personal virtual machine. The infrastructure will be secured with **TLS** and optimized for performance.
+The **Inception** project focuses on system administration through Docker. It is a multi-container setup with services like **NGINX**, **WordPress**, **MariaDB**, and **Redis** on a personal virtual machine. The infrastructure is secured with **TLS** and optimized for performance.
 
 ## Services
 
